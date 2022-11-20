@@ -2,6 +2,17 @@ package orm
 
 import "gorm.io/gorm"
 
+type IORM interface {
+	GetAllRepositories() ([]Repository, error)
+	CreateRepository(repo Repository) (*Repository, error)
+	DeleteRepository(ID string) error
+	GetRepositoryByID(ID string) (*Repository, error)
+	UpdateRepository(repo Repository) (*Repository, error)
+	GetAllResultsByRepositoryID(ID string) ([]Result, error)
+	CreateResult(res Result) (*Result, error)
+	UpdateResult(res Result) (*Result, error)
+}
+
 type ORM struct {
 	DB IDatabaseConnection
 }
