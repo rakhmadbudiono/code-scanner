@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS repositories(
+    id uuid NOT NULL PRIMARY KEY,
+    name VARCHAR (100) NOT NULL,
+    link VARCHAR (150) NOT NULL
+);

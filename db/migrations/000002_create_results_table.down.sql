@@ -1,0 +1,4 @@
+BEGIN;
+DROP TABLE IF EXISTS results;
+DROP TYPE enum_status;
+COMMIT;
