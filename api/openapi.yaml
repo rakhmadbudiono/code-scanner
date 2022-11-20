@@ -1,0 +1,221 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Code Scanner
+  description: Simple code scanning application that detects sensitive keywords in public git repos
+paths:
+  /repository:
+    get:
+      description: Returns all repositories from the system
+      operationId: getAllRepositories
+      responses:
+        "200":
+          description: all repositories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Repository"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      description: Creates a new repository. Duplicates aren't allowed
+      operationId: createRepository
+      requestBody:
+        description: new repository
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewRepository"
+      responses:
+        "200":
+          description: repository response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Repository"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /repository/{id}:
+    get:
+      description: Returns a repository based on a single ID
+      operationId: getRepositoryByID
+      parameters:
+        - name: id
+          in: path
+          description: repository ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: repository response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Repository"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      description: Updates a repository based on a single ID
+      operationId: updateRepository
+      parameters:
+        - name: id
+          in: path
+          description: ID of repository to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: repository
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewRepository"
+      responses:
+        "200":
+          description: repository response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Repository"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      description: deletes a single repository based on the ID supplied
+      operationId: deleteRepository
+      parameters:
+        - name: id
+          in: path
+          description: ID of repository to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: repository deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /repository/{id}/scan:
+    post:
+      description: Scan a repository
+      operationId: scanRepository
+      parameters:
+        - name: id
+          in: path
+          description: ID of repository to scan
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: repository scanned
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /repository/{id}/scan/result:
+    get:
+      description: Scan a repository
+      operationId: GetAllResultsByRepositoryID
+      parameters:
+        - name: id
+          in: path
+          description: repository ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: scan result response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Result"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Repository:
+      allOf:
+        - $ref: "#/components/schemas/NewRepository"
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+
+    NewRepository:
+      type: object
+      required:
+        - name
+        - link
+      properties:
+        name:
+          type: string
+        link:
+          type: string
+          
+    Result:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        repository_name:
+          type: string
+        repository_url:
+          type: string
+        findings:
+          type: string
+        queued_at:
+          type: string
+        scanning_at:
+          type: string
+        finished_at:
+          type: string
+    
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
