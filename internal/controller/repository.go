@@ -1,6 +1,12 @@
 package controller
 
-import "github.com/rakhmadbudiono/code-scanner/internal/orm"
+import (
+	"errors"
+	"time"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/rakhmadbudiono/code-scanner/internal/orm"
+)
 
 func (c *Controller) GetAllRepositories() ([]orm.Repository, error) {
 	return c.ORM.GetAllRepositories()
@@ -23,9 +29,37 @@ func (c *Controller) UpdateRepository(repo *orm.Repository) (*orm.Repository, er
 }
 
 func (c *Controller) ScanRepository(ID string) error {
+	repo, err := c.ORM.GetRepositoryByID(ID)
+	if err != nil {
+		return err
+	}
+	if repo == nil {
+		return errors.New("repository not found")
+	}
+
+	result := orm.Result{
+		RepositoryID: ID,
+		Status:       orm.Queued,
+		QueuedAt:     time.Now(),
+	}
+	if err = result.Findings.Set([]string{}); err != nil {
+		return err
+	}
+	if _, err := c.ORM.CreateResult(result); err != nil {
+		return err
+	}
+
+	message := &kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: &c.Config.Kafka.ScanRepoTopic, Partition: kafka.PartitionAny},
+		Value:          []byte(ID),
+	}
+	if err := c.Pub.Produce(message, nil); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (c *Controller) GetAllResultsByRepositoryID(ID string) ([]orm.Result, error) {
-	return []orm.Result{}, nil
+	return c.ORM.GetAllResultsByRepositoryID(ID)
 }

@@ -1,6 +1,7 @@
 package orm_test
 
 import (
+	"database/sql"
 	"errors"
 	"testing"
 	"time"
@@ -68,14 +69,10 @@ func TestCreateResult(t *testing.T) {
 	}{
 		{
 			input: orm.Result{
-				Repo: orm.Repository{
-					ID:   "uuid",
-					Name: "test-repo",
-					Link: "github.com/rakhmadbudiono/test-repo",
-				},
-				Status:   orm.Queued,
-				Findings: pgtype.JSONB{},
-				QueuedAt: time.Now(),
+				RepositoryID: "uuid",
+				Status:       orm.Queued,
+				Findings:     pgtype.JSONB{},
+				QueuedAt:     time.Now(),
 			},
 			database: func() orm.IDatabaseConnection {
 				mockDB := new(mocks.IDatabaseConnection)
@@ -90,14 +87,10 @@ func TestCreateResult(t *testing.T) {
 		},
 		{
 			input: orm.Result{
-				Repo: orm.Repository{
-					ID:   "uuid",
-					Name: "test-repo",
-					Link: "github.com/rakhmadbudiono/test-repo",
-				},
-				Status:   orm.Queued,
-				Findings: pgtype.JSONB{},
-				QueuedAt: time.Now(),
+				RepositoryID: "uuid",
+				Status:       orm.Queued,
+				Findings:     pgtype.JSONB{},
+				QueuedAt:     time.Now(),
 			},
 			database: func() orm.IDatabaseConnection {
 				mockDB := new(mocks.IDatabaseConnection)
@@ -128,17 +121,19 @@ func TestUpdateResult(t *testing.T) {
 	}{
 		{
 			input: orm.Result{
-				ID: "uuid",
-				Repo: orm.Repository{
-					ID:   "uuid",
-					Name: "test-repo",
-					Link: "github.com/rakhmadbudiono/test-repo",
+				ID:           "uuid",
+				RepositoryID: "uuid",
+				Status:       orm.Success,
+				Findings:     pgtype.JSONB{},
+				QueuedAt:     time.Now(),
+				ScanningAt: sql.NullTime{
+					Time:  time.Now(),
+					Valid: true,
 				},
-				Status:     orm.Success,
-				Findings:   pgtype.JSONB{},
-				QueuedAt:   time.Now(),
-				ScanningAt: time.Now(),
-				FinishedAt: time.Now(),
+				FinishedAt: sql.NullTime{
+					Time:  time.Now(),
+					Valid: true,
+				},
 			},
 			database: func() orm.IDatabaseConnection {
 				mockDB := new(mocks.IDatabaseConnection)
@@ -153,17 +148,19 @@ func TestUpdateResult(t *testing.T) {
 		},
 		{
 			input: orm.Result{
-				ID: "uuid",
-				Repo: orm.Repository{
-					ID:   "uuid",
-					Name: "test-repo",
-					Link: "github.com/rakhmadbudiono/test-repo",
+				ID:           "uuid",
+				RepositoryID: "uuid",
+				Status:       orm.Success,
+				Findings:     pgtype.JSONB{},
+				QueuedAt:     time.Now(),
+				ScanningAt: sql.NullTime{
+					Time:  time.Now(),
+					Valid: true,
 				},
-				Status:     orm.Success,
-				Findings:   pgtype.JSONB{},
-				QueuedAt:   time.Now(),
-				ScanningAt: time.Now(),
-				FinishedAt: time.Now(),
+				FinishedAt: sql.NullTime{
+					Time:  time.Now(),
+					Valid: true,
+				},
 			},
 			database: func() orm.IDatabaseConnection {
 				mockDB := new(mocks.IDatabaseConnection)

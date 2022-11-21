@@ -11,6 +11,7 @@ func main() {
 	ctrl := controller.NewController(
 		cfg,
 		controller.WithDatabase(),
+		controller.WithPublisher(),
 	)
 
 	server := rest.NewServer(cfg, ctrl)

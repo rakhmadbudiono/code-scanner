@@ -2,6 +2,7 @@ package configs_test
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/rakhmadbudiono/code-scanner/configs"
@@ -13,30 +14,31 @@ func TestNew(t *testing.T) {
 		t.Skip()
 	}
 
+	envs := os.Environ()
 	cases := []struct {
 		exportEnvs func()
 		expected   configs.Config
 	}{
 		{
+
 			exportEnvs: func() {
-				os.Setenv("SERVER_PORT", "8000")
-				os.Setenv("DB_HOST", "testhost")
-				os.Setenv("DB_PORT", "1234")
-				os.Setenv("DB_NAME", "dummydb")
-				os.Setenv("DB_USER", "postgres")
-				os.Setenv("DB_PASSWORD", "postgres")
+				os.Clearenv()
 			},
 			expected: configs.Config{
 				Server: configs.Server{
 					Port: "8000",
 				},
 				Database: configs.Database{
-					Host:     "testhost",
-					Port:     "1234",
-					Name:     "dummydb",
+					Host:     "localhost",
+					Port:     "5432",
+					Name:     "code-scanner",
 					User:     "postgres",
 					Password: "postgres",
-					DSN:      "host=testhost port=1234 user=postgres dbname=dummydb sslmode=disable password=postgres",
+					DSN:      "host=localhost port=5432 user=postgres dbname=code-scanner sslmode=disable password=postgres",
+				},
+				Kafka: configs.Kafka{
+					Servers:       "localhost",
+					ScanRepoTopic: "code-scanner.repository.scan",
 				},
 			},
 		},
@@ -47,5 +49,11 @@ func TestNew(t *testing.T) {
 		cfg := configs.New()
 
 		assert.Equal(t, tc.expected, *cfg)
+	}
+
+	// return envs
+	for _, env := range envs {
+		pair := strings.SplitN(env, "=", 2)
+		os.Setenv(pair[0], pair[1])
 	}
 }

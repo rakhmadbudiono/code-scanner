@@ -13,6 +13,7 @@ var root Config
 type Config struct {
 	Server
 	Database
+	Kafka
 }
 
 // New load and return config object
@@ -31,6 +32,9 @@ func New() *Config {
 		root.Database.Name,
 		root.Database.Password,
 	)
+	if err := envconfig.Process("KAFKA", &root.Kafka); err != nil {
+		log.Fatal(err.Error())
+	}
 
 	return &root
 }

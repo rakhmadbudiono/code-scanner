@@ -1,6 +1,7 @@
 package controller_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -202,9 +203,94 @@ func TestScanRepository(t *testing.T) {
 		err        error
 	}{
 		{
-			input:      "uuid",
-			controller: controller.Controller{},
-			err:        nil,
+			input: "uuid",
+			controller: func() controller.Controller {
+				mockORM := new(mocks.IORM)
+				mockORM.On("GetRepositoryByID", mock.Anything).Return(&orm.Repository{}, nil).Once()
+				mockORM.On("CreateResult", mock.Anything).Return(&orm.Result{}, nil).Once()
+
+				mockPub := new(mocks.IPublisher)
+				mockPub.On("Produce", mock.Anything, mock.Anything).Return(nil).Once()
+
+				return controller.Controller{
+					ORM:    mockORM,
+					Pub:    mockPub,
+					Config: cfg,
+				}
+			}(),
+			err: nil,
+		},
+		{
+			input: "uuid",
+			controller: func() controller.Controller {
+				mockORM := new(mocks.IORM)
+				mockORM.On("GetRepositoryByID", mock.Anything).Return(&orm.Repository{}, errors.New("error when get repo")).Once()
+				mockORM.On("CreateResult", mock.Anything).Return(&orm.Result{}, nil).Once()
+
+				mockPub := new(mocks.IPublisher)
+				mockPub.On("Produce", mock.Anything, mock.Anything).Return(nil).Once()
+
+				return controller.Controller{
+					ORM:    mockORM,
+					Pub:    mockPub,
+					Config: cfg,
+				}
+			}(),
+			err: errors.New("error when get repo"),
+		},
+		{
+			input: "uuid",
+			controller: func() controller.Controller {
+				mockORM := new(mocks.IORM)
+				mockORM.On("GetRepositoryByID", mock.Anything).Return(nil, nil).Once()
+				mockORM.On("CreateResult", mock.Anything).Return(&orm.Result{}, nil).Once()
+
+				mockPub := new(mocks.IPublisher)
+				mockPub.On("Produce", mock.Anything, mock.Anything).Return(nil).Once()
+
+				return controller.Controller{
+					ORM:    mockORM,
+					Pub:    mockPub,
+					Config: cfg,
+				}
+			}(),
+			err: errors.New("repository not found"),
+		},
+		{
+			input: "uuid",
+			controller: func() controller.Controller {
+				mockORM := new(mocks.IORM)
+				mockORM.On("GetRepositoryByID", mock.Anything).Return(&orm.Repository{}, nil).Once()
+				mockORM.On("CreateResult", mock.Anything).Return(&orm.Result{}, errors.New("error when create result")).Once()
+
+				mockPub := new(mocks.IPublisher)
+				mockPub.On("Produce", mock.Anything, mock.Anything).Return(nil).Once()
+
+				return controller.Controller{
+					ORM:    mockORM,
+					Pub:    mockPub,
+					Config: cfg,
+				}
+			}(),
+			err: errors.New("error when create result"),
+		},
+		{
+			input: "uuid",
+			controller: func() controller.Controller {
+				mockORM := new(mocks.IORM)
+				mockORM.On("GetRepositoryByID", mock.Anything).Return(&orm.Repository{}, nil).Once()
+				mockORM.On("CreateResult", mock.Anything).Return(&orm.Result{}, nil).Once()
+
+				mockPub := new(mocks.IPublisher)
+				mockPub.On("Produce", mock.Anything, mock.Anything).Return(errors.New("error when produce event")).Once()
+
+				return controller.Controller{
+					ORM:    mockORM,
+					Pub:    mockPub,
+					Config: cfg,
+				}
+			}(),
+			err: errors.New("error when produce event"),
 		},
 	}
 
@@ -223,10 +309,17 @@ func TestGetAllResultsByRepositoryID(t *testing.T) {
 		err        error
 	}{
 		{
-			input:      "uuid",
-			controller: controller.Controller{},
-			expected:   []orm.Result{},
-			err:        nil,
+			input: "uuid",
+			controller: func() controller.Controller {
+				mockORM := new(mocks.IORM)
+				mockORM.On("GetAllResultsByRepositoryID", mock.Anything).Return([]orm.Result{}, nil).Once()
+
+				return controller.Controller{
+					ORM: mockORM,
+				}
+			}(),
+			expected: []orm.Result{},
+			err:      nil,
 		},
 	}
 

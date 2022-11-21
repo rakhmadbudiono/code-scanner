@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS results(
     id uuid NOT NULL PRIMARY KEY,
     repository_id uuid NOT NULL,
     status enum_status NOT NULL,
-    repository_url VARCHAR (150) NOT NULL,
     findings JSONB,
     queued_at TIMESTAMP,
     scanning_at TIMESTAMP,

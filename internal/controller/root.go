@@ -6,6 +6,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"github.com/confluentinc/confluent-kafka-go/kafka"
+
 	"github.com/rakhmadbudiono/code-scanner/configs"
 	"github.com/rakhmadbudiono/code-scanner/internal/orm"
 )
@@ -23,6 +25,11 @@ type IController interface {
 type Controller struct {
 	Config *configs.Config
 	ORM    orm.IORM
+	Pub    IPublisher
+}
+
+type IPublisher interface {
+	Produce(msg *kafka.Message, deliveryChan chan kafka.Event) error
 }
 
 type ControllerDependencyOption func(*Controller)
@@ -48,5 +55,20 @@ func WithDatabase() ControllerDependencyOption {
 		log.Println("Connected to database...")
 
 		c.ORM = &orm.ORM{DB: db}
+	}
+}
+
+func WithPublisher() ControllerDependencyOption {
+	return func(c *Controller) {
+		cfg := &kafka.ConfigMap{
+			"bootstrap.servers": c.Config.Kafka.Servers,
+		}
+		pub, err := kafka.NewProducer(cfg)
+		if err != nil {
+			log.Fatalf("Couldn't connect to kafka: %s", err)
+		}
+		log.Println("Connected to kafka...")
+
+		c.Pub = pub
 	}
 }

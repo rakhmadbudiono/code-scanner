@@ -3,6 +3,7 @@ module github.com/rakhmadbudiono/code-scanner
 go 1.19
 
 require (
+	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/getkin/kin-openapi v0.108.0
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgtype v1.12.0

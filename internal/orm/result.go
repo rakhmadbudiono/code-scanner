@@ -1,6 +1,7 @@
 package orm
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -17,13 +18,14 @@ const (
 )
 
 type Result struct {
-	ID         string       `json:"id"`
-	Repo       Repository   `gorm:"foreignKey:repository_id;not null" json:"repository"`
-	Status     ResultStatus `gorm:"type:enum_status;not null" json:"status"`
-	Findings   pgtype.JSONB `gorm:"type:jsonb" json:"findings"`
-	QueuedAt   time.Time    `json:"queued_at"`
-	ScanningAt time.Time    `json:"scanning_at"`
-	FinishedAt time.Time    `json:"finished_at"`
+	ID           string       `json:"id"`
+	RepositoryID string       `json:"repository_id"`
+	Repository   Repository   `gorm:"foreignKey:repository_id;not null" json:"repository"`
+	Status       ResultStatus `gorm:"type:enum_status;not null" json:"status"`
+	Findings     pgtype.JSONB `gorm:"type:jsonb" json:"findings"`
+	QueuedAt     time.Time    `json:"queued_at"`
+	ScanningAt   sql.NullTime `json:"scanning_at"`
+	FinishedAt   sql.NullTime `json:"finished_at"`
 }
 
 func (orm *ORM) GetAllResultsByRepositoryID(ID string) ([]Result, error) {

@@ -7,7 +7,6 @@ import (
 
 	"github.com/rakhmadbudiono/code-scanner/configs"
 	"github.com/rakhmadbudiono/code-scanner/internal/controller"
-	"github.com/rakhmadbudiono/code-scanner/internal/orm"
 )
 
 var cfg *configs.Config = configs.New()
@@ -38,29 +37,36 @@ func TestWithDatabase(t *testing.T) {
 	}
 
 	cases := []struct {
-		input struct {
-			config *configs.Config
-			orm    orm.IORM
-		}
-		expected controller.Controller
+		input *configs.Config
 	}{
 		{
-			input: struct {
-				config *configs.Config
-				orm    orm.IORM
-			}{
-				config: cfg,
-			},
-			expected: controller.Controller{
-				Config: cfg,
-			},
+			input: cfg,
 		},
 	}
 
 	for _, tc := range cases {
-		ctrl := controller.NewController(tc.input.config, controller.WithDatabase())
+		ctrl := controller.NewController(tc.input, controller.WithDatabase())
 
-		assert.Equal(t, tc.expected.Config, ctrl.Config)
 		assert.NotNil(t, ctrl.ORM)
+	}
+}
+
+func TestWithPublisher(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+
+	cases := []struct {
+		input *configs.Config
+	}{
+		{
+			input: cfg,
+		},
+	}
+
+	for _, tc := range cases {
+		ctrl := controller.NewController(tc.input, controller.WithPublisher())
+
+		assert.NotNil(t, ctrl.Pub)
 	}
 }
