@@ -70,3 +70,23 @@ func TestWithPublisher(t *testing.T) {
 		assert.NotNil(t, ctrl.Pub)
 	}
 }
+
+func TestWithSubscriber(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+
+	cases := []struct {
+		input *configs.Config
+	}{
+		{
+			input: cfg,
+		},
+	}
+
+	for _, tc := range cases {
+		ctrl := controller.NewController(tc.input, controller.WithSubscriber())
+
+		assert.NotNil(t, ctrl.Sub)
+	}
+}

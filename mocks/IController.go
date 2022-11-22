@@ -118,6 +118,11 @@ func (_m *IController) GetRepositoryByID(ID string) (*orm.Repository, error) {
 	return r0, r1
 }
 
+// RunScanner provides a mock function with given fields:
+func (_m *IController) RunScanner() {
+	_m.Called()
+}
+
 // ScanRepository provides a mock function with given fields: ID
 func (_m *IController) ScanRepository(ID string) error {
 	ret := _m.Called(ID)

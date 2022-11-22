@@ -45,13 +45,14 @@ func (c *Controller) ScanRepository(ID string) error {
 	if err = result.Findings.Set([]string{}); err != nil {
 		return err
 	}
-	if _, err := c.ORM.CreateResult(result); err != nil {
+	newResult, err := c.ORM.CreateResult(result)
+	if err != nil {
 		return err
 	}
 
 	message := &kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &c.Config.Kafka.ScanRepoTopic, Partition: kafka.PartitionAny},
-		Value:          []byte(ID),
+		Value:          []byte(newResult.ID),
 	}
 	if err := c.Pub.Produce(message, nil); err != nil {
 		return err

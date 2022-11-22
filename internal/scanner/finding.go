@@ -1,28 +1,28 @@
 package scanner
 
 type Finding struct {
-	Type   string
-	RuleID string
-	Location
-	Metadata
+	Type     string `json:"type"`
+	RuleID   string `json:"ruleId"`
+	Location `json:"location"`
+	Metadata `json:"metadata"`
 }
 
 type Location struct {
-	Path string
-	Positions
+	Path      string `json:"path"`
+	Positions `json:"positions"`
 }
 
 type Positions struct {
-	Begin
+	Begin `json:"begin"`
 }
 
 type Begin struct {
-	Line int
+	Line int `json:"line"`
 }
 
 type Metadata struct {
-	Description string
-	Severity    RuleSeverity
+	Description string       `json:"description"`
+	Severity    RuleSeverity `json:"severity"`
 }
 
 func NewFinding(path string, line int, rule Rule) *Finding {

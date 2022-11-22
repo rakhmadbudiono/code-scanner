@@ -113,6 +113,48 @@ func TestCreateResult(t *testing.T) {
 	}
 }
 
+func TestGetResultByID(t *testing.T) {
+	cases := []struct {
+		input    string
+		database orm.IDatabaseConnection
+		err      error
+	}{
+		{
+			input: "uuid",
+			database: func() orm.IDatabaseConnection {
+				mockDB := new(mocks.IDatabaseConnection)
+				db := &gorm.DB{
+					Error: nil,
+				}
+				mockDB.On("First", mock.Anything).Return(db).Once()
+
+				return mockDB
+			}(),
+			err: nil,
+		},
+		{
+			input: "uuid",
+			database: func() orm.IDatabaseConnection {
+				mockDB := new(mocks.IDatabaseConnection)
+				db := &gorm.DB{
+					Error: errors.New("database error"),
+				}
+				mockDB.On("First", mock.Anything).Return(db).Once()
+
+				return mockDB
+			}(),
+			err: errors.New("database error"),
+		},
+	}
+
+	for _, tc := range cases {
+		o := &orm.ORM{DB: tc.database}
+		_, err := o.GetResultByID(tc.input)
+
+		assert.Equal(t, tc.err, err)
+	}
+}
+
 func TestUpdateResult(t *testing.T) {
 	cases := []struct {
 		input    orm.Result

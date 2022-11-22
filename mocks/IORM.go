@@ -141,6 +141,29 @@ func (_m *IORM) GetRepositoryByID(ID string) (*orm.Repository, error) {
 	return r0, r1
 }
 
+// GetResultByID provides a mock function with given fields: ID
+func (_m *IORM) GetResultByID(ID string) (*orm.Result, error) {
+	ret := _m.Called(ID)
+
+	var r0 *orm.Result
+	if rf, ok := ret.Get(0).(func(string) *orm.Result); ok {
+		r0 = rf(ID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*orm.Result)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(ID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateRepository provides a mock function with given fields: repo
 func (_m *IORM) UpdateRepository(repo orm.Repository) (*orm.Repository, error) {
 	ret := _m.Called(repo)

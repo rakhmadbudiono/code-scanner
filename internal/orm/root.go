@@ -11,6 +11,7 @@ type IORM interface {
 	GetAllResultsByRepositoryID(ID string) ([]Result, error)
 	CreateResult(res Result) (*Result, error)
 	UpdateResult(res Result) (*Result, error)
+	GetResultByID(ID string) (*Result, error)
 }
 
 type ORM struct {

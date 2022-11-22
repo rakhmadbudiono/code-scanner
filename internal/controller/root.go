@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,16 +21,23 @@ type IController interface {
 	UpdateRepository(repo *orm.Repository) (*orm.Repository, error)
 	ScanRepository(ID string) error
 	GetAllResultsByRepositoryID(ID string) ([]orm.Result, error)
+	RunScanner()
 }
 
 type Controller struct {
 	Config *configs.Config
 	ORM    orm.IORM
 	Pub    IPublisher
+	Sub    ISubscriber
 }
 
 type IPublisher interface {
 	Produce(msg *kafka.Message, deliveryChan chan kafka.Event) error
+}
+
+type ISubscriber interface {
+	Subscribe(topic string, rebalanceCb kafka.RebalanceCb) error
+	ReadMessage(timeout time.Duration) (*kafka.Message, error)
 }
 
 type ControllerDependencyOption func(*Controller)
@@ -70,5 +78,21 @@ func WithPublisher() ControllerDependencyOption {
 		log.Println("Connected to kafka...")
 
 		c.Pub = pub
+	}
+}
+
+func WithSubscriber() ControllerDependencyOption {
+	return func(c *Controller) {
+		cfg := &kafka.ConfigMap{
+			"bootstrap.servers": c.Config.Kafka.Servers,
+			"group.id":          "myGroup",
+		}
+		sub, err := kafka.NewConsumer(cfg)
+		if err != nil {
+			log.Fatalf("Couldn't connect to kafka: %s", err)
+		}
+		log.Println("Connected to kafka...")
+
+		c.Sub = sub
 	}
 }

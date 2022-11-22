@@ -20,7 +20,6 @@ const (
 type Result struct {
 	ID           string       `json:"id"`
 	RepositoryID string       `json:"repository_id"`
-	Repository   Repository   `gorm:"foreignKey:repository_id;not null" json:"repository"`
 	Status       ResultStatus `gorm:"type:enum_status;not null" json:"status"`
 	Findings     pgtype.JSONB `gorm:"type:jsonb" json:"findings"`
 	QueuedAt     time.Time    `json:"queued_at"`
@@ -48,6 +47,17 @@ func (orm *ORM) CreateResult(res Result) (*Result, error) {
 	}
 
 	return &res, nil
+}
+
+func (orm *ORM) GetResultByID(ID string) (*Result, error) {
+	result := &Result{ID: ID}
+	tx := orm.DB.First(result)
+
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	return result, nil
 }
 
 func (orm *ORM) UpdateResult(res Result) (*Result, error) {
