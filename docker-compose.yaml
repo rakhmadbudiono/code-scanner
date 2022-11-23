@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  server:
+    container_name: code-scanner-server
+    network_mode: "host"
+    build: 
+      context: .
+      dockerfile: server.Dockerfile
+    ports:
+      - 8000:8000
+  worker:
+    container_name: code-scanner-worker
+    network_mode: "host"
+    build:
+      context: .
+      dockerfile: worker.Dockerfile
