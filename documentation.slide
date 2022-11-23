@@ -1,0 +1,19 @@
+Simple Code Scanner
+that detects sensitive keywords in public git repos
+
+Rakhmad Budiono
+
+* Components
+- *Server*: For client to interact with the system, low computational process
+- *Worker*: For performing scanning process, high computational process
+- *Kafka*: For message broker
+- *Postgres*: For database
+
+* High Level Design
+.caption Link: [[https://mermaid.live/edit#pako:eNqNUj1vwyAQ_SuI2VV2hkzpVEWKmqGLlxM8p8g2uAdYiqL8957tumo9RGHi7t4Hx91N2-igjU74KggWB08Xpr4OSs4ZPIJf9vs3aloyEge3E1yBSpaCYgwx-Rz5qjAi5A3rFFO-MJJRR-JW0Kl0WVFSs4Rb0LO0gD8it2Cj3mHhR-xsDKn0D40WyiMjH9TAcSqlDWW1O3G0Ut3aLGgSFS-1Yu2vwnPG_yjoEiadhny3tv2czF-G_L2udA_uyTuZ2G1K1zp_oketjVwdGhJiretwF2gZHGW8uqkhbTIXVJpKjudrsGu8YH6Grk1D8tRKY-Ycl82YF-T-DWM7vjY][MermaidJS]]
+.image high-level-design.png _ 750
+
+* Design Rationale
+- Separating server with worker so client interaction does not get the burden of high computational process
+- Message broker as a communication bridge between server and worker
+- Relational database because the schema is well defined

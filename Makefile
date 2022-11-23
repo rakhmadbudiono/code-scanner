@@ -9,10 +9,16 @@ install-golangci-lint:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.50.1
 	wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.50.1
 
+install-present:
+	go get golang.org/x/net
+	go get golang.org/x/tools
+	go install golang.org/x/tools/cmd/present
+
 install-deps:
 	make install-migrate
 	make install-staticcheck
 	make install-golangci-lint
+	make install-present
 
 migrate-up:
 	migrate -database ${POSTGRESQL_URL} -path db/migrations up

@@ -145,8 +145,8 @@ paths:
                 $ref: "#/components/schemas/Error"
   /repository/{id}/scan/result:
     get:
-      description: Scan a repository
-      operationId: GetAllResultsByRepositoryID
+      description: List repo scan result
+      operationId: getAllResultsByRepositoryID
       parameters:
         - name: id
           in: path
@@ -157,7 +157,7 @@ paths:
             format: uuid
       responses:
         "200":
-          description: scan result response
+          description: list of results
           content:
             application/json:
               schema:
@@ -196,20 +196,18 @@ components:
       properties:
         id:
           type: string
+        repository_id:
+          type: string
         status:
           type: string
-        repository_name:
-          type: string
-        repository_url:
-          type: string
         findings:
-          type: string
+          type: object
         queued_at:
           type: string
         scanning_at:
-          type: string
+          type: object
         finished_at:
-          type: string
+          type: object
     
     Error:
       type: object
